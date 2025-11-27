@@ -3,4 +3,5 @@ messages = {
     "VALIDATION_ERROR": "Validation Error",
     "LOGIN_SUCCESS": "Login successful",
     "LOGIN_FAILED": "Invalid credentials",
+    "PROFILE_FETCHED": "Profile details fetched successfully",
 }
