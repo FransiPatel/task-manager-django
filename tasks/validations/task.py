@@ -15,15 +15,13 @@ class CreateTaskValidator(serializers.Serializer):
     status = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     def validate_priority(self, value):
-        allowed = [c[0] for c in PRIORITY_CHOICES]
-        if value is not None and value not in allowed:
-            raise serializers.ValidationError("Invalid priority value")
+        if value is not None and value not in PRIORITY_CHOICES:
+            raise serializers.ValidationError(INVALID_PRIORITY)
         return value
 
     def validate_status(self, value):
-        allowed = [c[0] for c in STATUS_CHOICES]
-        if value is not None and value not in allowed:
-            raise serializers.ValidationError("Invalid status value")
+        if value is not None and value not in STATUS_CHOICES:
+            raise serializers.ValidationError(INVALID_STATUS)
         return value
 
 
@@ -38,15 +36,13 @@ class UpdateTaskValidator(serializers.Serializer):
     status = serializers.CharField(required=False, allow_null=True, allow_blank=True)
 
     def validate_priority(self, value):
-        allowed = [c[0] for c in PRIORITY_CHOICES]
-        if value is not None and value not in allowed:
-            raise serializers.ValidationError("Invalid priority value")
+        if value is not None and value not in PRIORITY_CHOICES:
+            raise serializers.ValidationError(INVALID_PRIORITY)
         return value
 
     def validate_status(self, value):
-        allowed = [c[0] for c in STATUS_CHOICES]
-        if value is not None and value not in allowed:
-            raise serializers.ValidationError("Invalid status value")
+        if value is not None and value not in STATUS_CHOICES:
+            raise serializers.ValidationError(INVALID_STATUS)
         return value
 
 
@@ -56,7 +52,5 @@ class DeleteTaskValidator(serializers.Serializer):
     def validate_id(self, value):
         user = self.context.get("user")
         if not Task.objects.filter(id=value, userId=user, isDeleted=False).exists():
-            raise serializers.ValidationError(
-                "Task not found or does not belong to the user"
-            )
+            raise serializers.ValidationError(TASK_NOT_FOUND)
         return value

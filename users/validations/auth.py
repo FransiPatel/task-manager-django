@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from task_manager.responseMessage import *
 
 User = get_user_model()
 
@@ -13,12 +14,12 @@ class RegisterValidator(serializers.Serializer):
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("Email already exists")
+            raise serializers.ValidationError(EMAIL_ALREADY_EXISTS)
         return value
 
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError("Username already exists")
+            raise serializers.ValidationError(USERNAME_ALREADY_EXISTS)
         return value
 
 

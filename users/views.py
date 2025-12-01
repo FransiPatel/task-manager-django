@@ -11,90 +11,112 @@ from task_manager.responseMessage import *
 
 class RegisterUser(APIView):
     def post(self, request):
-        validator = RegisterValidator(data=request.data)
-        if not validator.is_valid():
-            return Response(
-                {
-                    "status": status.HTTP_400_BAD_REQUEST,
-                    "message": VALIDATION_ERROR,
-                    "data": validator.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        try:
+            validator = RegisterValidator(data=request.data)
+            if not validator.is_valid():
+                return Response(
+                    {
+                        "status": status.HTTP_400_BAD_REQUEST,
+                        "message": VALIDATION_ERROR,
+                        "data": validator.errors,
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        serializer = UserSerializer(data=validator.validated_data)
-        if serializer.is_valid():
-            serializer.save()
+            serializer = UserSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {
+                        "status": status.HTTP_201_CREATED,
+                        "message": USER_CREATED,
+                        "data": serializer.data,
+                    },
+                    status=status.HTTP_201_CREATED,
+                )
+        except Exception as error:
+            print(f"Unexpected error: {error}")
             return Response(
                 {
-                    "status": status.HTTP_201_CREATED,
-                    "message": USER_CREATED,
-                    "data": serializer.data,
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "message": WENTS_WRONG,
                 },
-                status=status.HTTP_201_CREATED,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        return Response(
-            {
-                "status": status.HTTP_400_BAD_REQUEST,
-                "message": VALIDATION_ERROR,
-                "data": serializer.errors,
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
 
 
 class LoginUser(APIView):
     def post(self, request):
-        validator = LoginValidator(data=request.data)
-        if not validator.is_valid():
-            return Response(
-                {
-                    "status": status.HTTP_400_BAD_REQUEST,
-                    "message": VALIDATION_ERROR,
-                    "data": validator.errors,
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        email = validator.validated_data["email"]
-        password = validator.validated_data["password"]
-
-        user = authenticate(email=email, password=password)
-
-        if user:
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    "status": status.HTTP_200_OK,
-                    "message": LOGIN_SUCCESS,
-                    "data": {
-                        "refresh": str(refresh),
-                        "access": str(refresh.access_token),
+        try:
+            validator = LoginValidator(data=request.data)
+            if not validator.is_valid():
+                return Response(
+                    {
+                        "status": status.HTTP_400_BAD_REQUEST,
+                        "message": VALIDATION_ERROR,
+                        "data": validator.errors,
                     },
-                },
-                status=status.HTTP_200_OK,
-            )
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-        return Response(
-            {
-                "status": status.HTTP_401_UNAUTHORIZED,
-                "message": LOGIN_FAILED,
-                "data": None,
-            },
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
+            email = request.data["email"]
+            password = request.data["password"]
+
+            user = authenticate(email=email, password=password)
+
+            if user:
+                refresh = RefreshToken.for_user(user)
+                return Response(
+                    {
+                        "status": status.HTTP_200_OK,
+                        "message": LOGIN_SUCCESS,
+                        "data": {
+                            "refresh": str(refresh),
+                            "access": str(refresh.access_token),
+                        },
+                    },
+                    status=status.HTTP_200_OK,
+                )
+
+            return Response(
+                {
+                    "status": status.HTTP_401_UNAUTHORIZED,
+                    "message": LOGIN_FAILED,
+                    "data": None,
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+        except Exception as error:
+            print(f"Unexpected error: {error}")
+            return Response(
+                {
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "message": WENTS_WRONG,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class ProfileUser(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
-        return Response(
-            {
-                "status": status.HTTP_200_OK,
-                "message": PROFILE_FETCHED,
-                "data": serializer.data,
-            },
-            status=status.HTTP_200_OK,
-        )
+        try:
+            serializer = UserSerializer(request.user)
+            return Response(
+                {
+                    "status": status.HTTP_200_OK,
+                    "message": PROFILE_FETCHED,
+                    "data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as error:
+            print(f"Unexpected error: {error}")
+            return Response(
+                {
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "message": WENTS_WRONG,
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
