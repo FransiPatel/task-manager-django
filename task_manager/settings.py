@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "tasks",
-    "user",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -145,4 +145,4 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
-AUTH_USER_MODEL = "user.User"
+AUTH_USER_MODEL = "users.User"
