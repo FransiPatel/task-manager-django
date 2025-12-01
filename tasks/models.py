@@ -1,6 +1,6 @@
 from django.db import models
 import time
-from user.models import User
+from users.models import User
 from task_manager.constants import PRIORITY_CHOICES, STATUS_CHOICES
 import uuid
 
