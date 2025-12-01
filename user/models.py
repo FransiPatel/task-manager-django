@@ -1,6 +1,7 @@
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+import time
 
 
 class UserManager(BaseUserManager):
@@ -30,7 +31,20 @@ class User(AbstractBaseUser):
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
 
-    # password is already provided by AbstractBaseUser (DO NOT re-add)
+    # Unix timestamp fields
+    createdAt = models.BigIntegerField(default=int(time.time() * 1000))
+    updatedAt = models.BigIntegerField(default=int(time.time() * 1000))
+
+    # User fields
+    createdBy = models.CharField(
+        null=True,
+        blank=False,
+    )
+    updatedBy = models.CharField(
+        null=True,
+        blank=False,
+    )
+    isDeleted = models.BooleanField(default=False)
 
     objects = UserManager()
 
