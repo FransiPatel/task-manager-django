@@ -5,8 +5,8 @@ from rest_framework import status
 from .serializers import UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .messages import messages
 from .validations.auth import LoginValidator, RegisterValidator
+from task_manager.responseMessage import *
 
 
 class RegisterUser(APIView):
@@ -16,7 +16,7 @@ class RegisterUser(APIView):
             return Response(
                 {
                     "status": status.HTTP_400_BAD_REQUEST,
-                    "message": messages["VALIDATION_ERROR"],
+                    "message": VALIDATION_ERROR,
                     "data": validator.errors,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
@@ -28,7 +28,7 @@ class RegisterUser(APIView):
             return Response(
                 {
                     "status": status.HTTP_201_CREATED,
-                    "message": messages["USER_CREATED"],
+                    "message": USER_CREATED,
                     "data": serializer.data,
                 },
                 status=status.HTTP_201_CREATED,
@@ -36,7 +36,7 @@ class RegisterUser(APIView):
         return Response(
             {
                 "status": status.HTTP_400_BAD_REQUEST,
-                "message": messages["VALIDATION_ERROR"],
+                "message": VALIDATION_ERROR,
                 "data": serializer.errors,
             },
             status=status.HTTP_400_BAD_REQUEST,
@@ -50,7 +50,7 @@ class LoginUser(APIView):
             return Response(
                 {
                     "status": status.HTTP_400_BAD_REQUEST,
-                    "message": messages["VALIDATION_ERROR"],
+                    "message": VALIDATION_ERROR,
                     "data": validator.errors,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
@@ -66,7 +66,7 @@ class LoginUser(APIView):
             return Response(
                 {
                     "status": status.HTTP_200_OK,
-                    "message": messages["LOGIN_SUCCESS"],
+                    "message": LOGIN_SUCCESS,
                     "data": {
                         "refresh": str(refresh),
                         "access": str(refresh.access_token),
@@ -78,7 +78,7 @@ class LoginUser(APIView):
         return Response(
             {
                 "status": status.HTTP_401_UNAUTHORIZED,
-                "message": messages["LOGIN_FAILED"],
+                "message": LOGIN_FAILED,
                 "data": None,
             },
             status=status.HTTP_401_UNAUTHORIZED,
@@ -93,7 +93,7 @@ class ProfileUser(APIView):
         return Response(
             {
                 "status": status.HTTP_200_OK,
-                "message": messages["PROFILE_FETCHED"],
+                "message": PROFILE_FETCHED,
                 "data": serializer.data,
             },
             status=status.HTTP_200_OK,
