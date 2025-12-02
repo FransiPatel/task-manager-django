@@ -10,9 +10,12 @@ from .validations.task import (
     UpdateTaskValidator,
     DeleteTaskValidator,
 )
+from rest_framework.permissions import IsAuthenticated
 
 
 class CreateTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         try:
             validator = CreateTaskValidator(data=request.data)
@@ -69,6 +72,8 @@ class CreateTaskView(APIView):
 
 
 class TaskListView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         try:
             user = request.user
@@ -121,6 +126,8 @@ class TaskListView(APIView):
 
 
 class UpdateTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, partial=True):
         try:
             user = request.user
@@ -149,18 +156,28 @@ class UpdateTaskView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # Only allow certain fields to be updated; follow CreateTaskView structure
-            data = {
-                "title": request.data.get("title"),
-                "description": request.data.get("description"),
-                "dueDate": request.data.get("dueDate"),
-                "priority": request.data.get("priority"),
-                "status": request.data.get("status"),
-                "updatedBy": str(user.id),
-                "updatedAt": int(time.time() * 1000),
-            }
+            data = {}
 
-            serializer = TaskSerializer(task, data=data, partial=partial)
+            if "title" in request.data:
+                data["title"] = request.data["title"]
+
+            if "description" in request.data:
+                data["description"] = request.data["description"]
+
+            if "dueDate" in request.data:
+                data["dueDate"] = request.data["dueDate"]
+
+            if "priority" in request.data:
+                data["priority"] = request.data["priority"]
+
+            if "status" in request.data:
+                data["status"] = request.data["status"]
+
+            # always update metadata
+            data["updatedBy"] = str(user.id)
+            data["updatedAt"] = int(time.time() * 1000)
+
+            serializer = TaskSerializer(task, data=data, partial=True)
 
             if serializer.is_valid():
                 serializer.save()
@@ -193,6 +210,8 @@ class UpdateTaskView(APIView):
 
 
 class DeleteTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         try:
             user = request.user
@@ -238,6 +257,8 @@ class DeleteTaskView(APIView):
 
 
 class CompleteTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         try:
             user = request.user

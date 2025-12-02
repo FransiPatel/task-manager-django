@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from task_manager.responseMessage import *
+import re
 
 User = get_user_model()
 
@@ -20,6 +21,15 @@ class RegisterValidator(serializers.Serializer):
     def validate_username(self, value):
         if User.objects.filter(username=value).exists():
             raise serializers.ValidationError(USERNAME_ALREADY_EXISTS)
+        return value
+
+    def validate_password(self, value):
+        pattern = r'^[A-Za-z\d!@#*\$%^&()_+\-=\[\]{};\':"\\|,.<>\/?]{8,15}$'
+
+        if not re.match(pattern, value):
+            raise serializers.ValidationError(
+                "Password must be 8-15 characters long and contain only valid special characters."
+            )
         return value
 
 

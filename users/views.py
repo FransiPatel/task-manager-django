@@ -40,6 +40,7 @@ class RegisterUser(APIView):
                 {
                     "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
                     "message": WENTS_WRONG,
+                    "data": {},
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -119,4 +120,41 @@ class ProfileUser(APIView):
                     "message": WENTS_WRONG,
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class LogoutUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")
+
+            if not refresh_token:
+                return Response(
+                    {
+                        "status": status.HTTP_400_BAD_REQUEST,
+                        "message": "Refresh token is required.",
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(
+                {
+                    "status": status.HTTP_200_OK,
+                    "message": "Logout successful.",
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except Exception:
+            return Response(
+                {
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "message": "Invalid or expired refresh token.",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
