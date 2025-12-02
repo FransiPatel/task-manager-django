@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import User
-from .helpers.validate_password import validate_password_strength
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -13,8 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Hash the password manually here
-        password = validate_password_strength(validated_data["password"])
-        validated_data["password"] = make_password(password)
+        validated_data["password"] = make_password(validated_data["password"])
 
         # Create user normally
         user = User.objects.create(
